@@ -149,28 +149,6 @@ export default function LotteryEntrance() {
         setOtpSent(true); 
     }
 
-    const generateKeyPair = async (e) => {
-        e.preventDefault(); 
-        // TODO : get public/private key from server
-        // const {publicKey, privateKey} = await generateKeyPairSync('rsa', {
-        //     modulusLength: 1024,
-        //     publicKeyEncoding: {
-        //       type: 'spki',
-        //       format: 'pem',
-        //     },
-        //     privateKeyEncoding: {
-        //       type: 'pkcs8',
-        //       format: 'pem',
-        //       cipher: 'aes-256-cbc',
-        //       passphrase: 'top secret',
-        //     },
-        // }); 
-        console.log(privateKey); 
-        console.log(publicKey);
-        setRsaPrivateKey(privateKey); 
-        setRsaPublicKey(publicKey); 
-    }
-
     const submitInfo = async (e) => {
         e.preventDefault(); 
         const res = await axios.post(`http://localhost:8080/api/encrypt`, {
@@ -214,13 +192,6 @@ export default function LotteryEntrance() {
                     <div>-----------------------------------------------------------------------------------</div>
                     {/* -------------------------------------------------- */}
                     <div>
-                    {/* Request RSA public-private key section */}
-                        <div>
-                            <h1>Generate RSA key-pair</h1>
-                            {rsaPublicKey ? (<div>RSA public key: {rsaPublicKey}</div>): (<></>)}
-                            {rsaPrivateKey ? (<div>RSA public key: {rsaPrivateKey}</div>): (<></>)}
-                            <button className="bg-red-500" onClick={async (e) => {await generateKeyPair(e)} } >Generate Key-pair</button>
-                        </div>
                     {/* Post info about user */}
                         <div>-----------------------------------------------------------------------------------</div>
                         <div>
