@@ -1,4 +1,4 @@
-import { contractAddresses, abi, AADHAR_SERVER_URL } from "../constants"
+import { contractAddresses, abi, AADHAR_SERVER_URL, field_to_numbers } from "../constants"
 // dont export from moralis when using react
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useEffect, useState, useRef, useCallback } from "react"
@@ -52,6 +52,8 @@ export default function LotteryEntrance() {
     const [otpSent1, setOtpSent1] = useState(false);
     const [isValidIDOtp1, setIsValidOtp1] = useState(true);
 
+    const [field, setField] = useState(''); 
+    const [fieldNumber, setFieldNumber] = useState(1);
 
     // const {
     //     runContractFunction: enterRaffle,
@@ -170,6 +172,14 @@ export default function LotteryEntrance() {
             }, 
             secpKey: account
         })
+        localStorage.setItem('RDMseed', response.data.seed);
+    }
+
+    const handleDropdownChange = (e) => {
+        console.log(e.target.value);
+        // console.log(fieldNumber);  
+        setFieldNumber(field_to_numbers[e.target.value]);
+        // setField(e.target.value);
     }
 
     return (
@@ -212,7 +222,37 @@ export default function LotteryEntrance() {
                             >Submit Info</button>
                         </div>
                     </div>
-                    
+                    <div>-----------------------------------------------------------------------------------</div>
+                    {/* Authentication */}
+                    <div>
+                        <h1>Authenticate</h1>
+                        <div>
+                            <input placeholder="Enter your Aadhar Number" type="text" onChange={(e) => {setAadharIDAuthSection(e.target.value)}} />
+                            {!isValidIDOtp1 ? (<div>Enter a valid ID</div>) : (<></>) }
+                            <div>
+                                <button onClick={async (e) => {await handleSendOtp(e)}} className="bg-red-500" disabled={aadharIDOtpSection==""}>Send OTP</button>
+                            </div>
+                            {otpsent ? (<div>OTP sent</div>) : (<></>)}
+                        </div>
+                        <div>
+                            <input placeholder="Enter session RSA key" />
+                        </div>
+                        <div>
+                            <div>Enter field to check</div>
+                            <select onChange={(e) => handleDropdownChange(e)} >
+                                <option value="name">name</option>    
+                                <option value="dob">date of Birth</option>    
+                                <option value="fatherName">father Name</option>    
+                                <option value="motherName">Mother Name</option>    
+                                <option value="address">address</option>    
+                                <option value="biometrics">biometrics</option>    
+                                <option value="phoneNumber">phoneNumber</option>    
+                            </select>       
+                            <div>
+                                <button className="bg-red-500" >Authenticate</button>                     
+                            </div>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div>Please connect to a supported chain </div>
