@@ -18,7 +18,7 @@ export default function LotteryEntrance() {
     const { account, Moralis, isWeb3Enabled, chainId: chainIdHex } = useMoralis()
     // These get re-rendered every time due to our connect button!
     const chainId = parseInt(chainIdHex)
-    console.log(`ChainId is ${chainId}`)
+    // console.log(`ChainId is ${chainId}`)
     const raffleAddress = chainId in contractAddresses ? contractAddresses[chainId][0] : null
 
     // State hooks
@@ -46,6 +46,11 @@ export default function LotteryEntrance() {
       setImage(imageSrc)
       console.log(imageSrc); 
     }, [webcamRef])
+
+
+    const [aadharIDAuthSection, setAadharIDAuthSection] = useState(""); 
+    const [otpSent1, setOtpSent1] = useState(false);
+    const [isValidIDOtp1, setIsValidOtp1] = useState(true);
 
 
     // const {
@@ -151,28 +156,20 @@ export default function LotteryEntrance() {
 
     const submitInfo = async (e) => {
         e.preventDefault(); 
-        const res = await axios.post(`http://localhost:8080/api/encrypt`, {
-            rsaKey: tempRsaKey,
-            text: "1"
-        }); 
-        console.log(res);
-        // console.log(publicEncrypt(tempRsaKey, Buffer.from("1"))); 
-        // const name1 = (publicEncrypt(tempRsaKey, Buffer.from("1"))).toString(); 
-        // console.log(name1);
-    //     const res = await axios.post(`http://localhost:8000/generateDID/register/`, {
-    //         aadharNumber: aadharIDOtpSection,
-    //         data: {
-    //             name: await crypto.publicEncrypt(tempRsaKey, name),
-    //             fatherName: await crypto.publicEncrypt(tempRsaKey, fatherName),
-    //             motherName: await crypto.publicEncrypt(tempRsaKey, motherName),
-    //             dob: await crypto.publicEncrypt(tempRsaKey, dob),
-    //             address: await crypto.publicEncrypt(tempRsaKey, address),
-    //             phoneNumber: await crypto.publicEncrypt(tempRsaKey, phoneNumber.toString()),
-    //             rdm: await crypto.publicEncrypt(tempRsaKey, image)
-    //         }, 
-    //         secpKey: account.get('ethAddress'), 
-    //         rsaKey: tempRsaKey 
-    //    });
+        // console.log(account); 
+        const response = await axios.post(`${AADHAR_SERVER_URL}/api/postdata` , {
+            aadharNumber: aadharIDOtpSection,
+            data: {
+                phoneNumber: phoneNumber,
+                name: name, 
+                fatherName: fatherName, 
+                motherName: motherName, 
+                dateOfBirth: dob,
+                address: address,
+                biometrics: image
+            }, 
+            secpKey: account
+        })
     }
 
     return (
@@ -210,9 +207,12 @@ export default function LotteryEntrance() {
                                     <button onClick={capture} className="bg-red-500">Capture</button>
                                 </div>
                             </div>
-                            <button className="bg-red-500" onClick={async (e) => {await submitInfo(e)}}>Submit Info</button>
+                            <button className="bg-red-500" onClick={async (e) => {await submitInfo(e)}}
+                                disabled={tempRsaKey=="" || name=="" || fatherName=="" || motherName=="" || dob=="" || address=="" || phoneNumber=="" || image==""}
+                            >Submit Info</button>
                         </div>
                     </div>
+                    
                 </div>
             ) : (
                 <div>Please connect to a supported chain </div>
